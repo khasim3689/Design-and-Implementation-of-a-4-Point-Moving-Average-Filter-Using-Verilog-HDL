@@ -1,0 +1,38 @@
+module filter(
+    input clk,
+    input reset,
+    input [7:0] data_in,
+    output [7:0] data_out
+    );
+    reg [7:0] sample0;
+reg [7:0] sample1;
+reg [7:0] sample2;
+
+wire [9:0] sum;
+
+// Sample storage
+always @(posedge clk or posedge reset)
+begin
+    if (reset)
+    begin
+        sample0 <= 8'd0;
+        sample1 <= 8'd0;
+        sample2 <= 8'd0;
+    end
+    else
+    begin
+        sample2 <= sample1;
+        sample1 <= sample0;
+        sample0 <= data_in;
+    end
+end
+
+// Add four samples
+assign sum = {2'b00,data_in} +
+             {2'b00,sample0} +
+             {2'b00,sample1} +
+             {2'b00,sample2};
+
+// Divide by 4
+assign data_out = sum >> 2;
+endmodule
